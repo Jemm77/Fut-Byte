@@ -1,10 +1,21 @@
 import AVFoundation
 import Foundation
+import Combine //añadio esta libreria,que @Published necesita
+
+//Uso de chat-GPT5 para correciones prompt:"Hola, Chat, me gustaria que me ayudaras a corregir y ayudarme a entender los errores al inicio de la clase Grabadora como tambien en la funcion solicitarPermiso(), porfavor "
 
 final class Grabadora: NSObject, AVAudioRecorderDelegate, ObservableObject {
     private var grabadora: AVAudioRecorder?
     @Published var permisoConcedido: Bool = false
     @Published var estaGrabando: Bool = false
+
+    // Opcional: consulta el estado actual del permiso sin disparar el prompt del sistema.
+    func actualizarEstadoPermiso() {
+        let permiso = AVAudioSession.sharedInstance().recordPermission
+        DispatchQueue.main.async {
+            self.permisoConcedido = (permiso == .granted)
+        }
+    }
 
     func solicitarPermiso() {
         AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
@@ -20,6 +31,11 @@ final class Grabadora: NSObject, AVAudioRecorderDelegate, ObservableObject {
     }
 
     func inicioDeGrabacion(duration: TimeInterval? = nil) {
+        guard permisoConcedido else {
+            print("No se puede grabar: permiso de micrófono no concedido.")
+            return
+        }
+
         let session = AVAudioSession.sharedInstance()
         do {
             try session.setCategory(.playAndRecord, mode: .default)

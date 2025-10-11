@@ -81,7 +81,7 @@ func extraerFrames(
     generator.requestedTimeToleranceAfter = .zero
 
     // Construir la lista de tiempos a muestrear
-    let durationSeconds = CMTimeGetSeconds(asset(.duration))
+    let durationSeconds = CMTimeGetSeconds(asset.duration) // CORREGIDO
     var times = [NSValue]()
     var current = 0.0
     while current < durationSeconds {
@@ -90,7 +90,7 @@ func extraerFrames(
         current += seconds
     }
     // Asegurar el último tiempo exacto si cae justo al final
-    if let last = times.last?.timeValue, last < asset(.duration) {
+    if let last = times.last?.timeValue, last < asset.duration { // CORREGIDO
         // no-op
     }
 
