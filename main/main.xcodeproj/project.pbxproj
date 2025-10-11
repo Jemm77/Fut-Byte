@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D1B035F2E9AC77700FA05BB /* intentofoundationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1B03592E9AC09000FA05BB /* intentofoundationModel.swift */; };
 		2D3529B42E9A062300ED56A3 /* escaneador.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3529402E99EDE000ED56A3 /* escaneador.swift */; };
 		2D3529B52E9A063300ED56A3 /* microfono.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3529B32E99FBA000ED56A3 /* microfono.swift */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D1B03592E9AC09000FA05BB /* intentofoundationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = intentofoundationModel.swift; sourceTree = "<group>"; };
 		2D3529402E99EDE000ED56A3 /* escaneador.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = escaneador.swift; sourceTree = "<group>"; };
 		2D3529B32E99FBA000ED56A3 /* microfono.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = microfono.swift; sourceTree = "<group>"; };
 		2D8C1F102E947C93005425C7 /* main.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = main.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				2D3529B32E99FBA000ED56A3 /* microfono.swift */,
+				2D1B03592E9AC09000FA05BB /* intentofoundationModel.swift */,
 				2D3529402E99EDE000ED56A3 /* escaneador.swift */,
 			);
 			path = "BackEnd ";
@@ -253,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D1B035F2E9AC77700FA05BB /* intentofoundationModel.swift in Sources */,
 				2D3529B42E9A062300ED56A3 /* escaneador.swift in Sources */,
 				2D3529B52E9A063300ED56A3 /* microfono.swift in Sources */,
 			);
