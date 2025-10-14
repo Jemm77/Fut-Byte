@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1.0.0",
+    "itemInfoEntries": {
+        "7F97B8A9-4C21-414C-96BD-84E6F11F96D5": {
+            "author": "com.apple.CoreML",
+            "description": "External FeatureDescription Overlay",
+            "name": "FeatureDescriptions.json",
+            "path": "com.apple.CoreML/FeatureDescriptions.json"
+        },
+        "E5140320-FE2E-4D82-AF13-27B43CF1775F": {
+            "author": "com.apple.CoreML",
+            "description": "CoreML Model Specification",
+            "name": "ImageClassifier4 2.mlmodel",
+            "path": "com.apple.CoreML/ImageClassifier4 2.mlmodel"
+        },
+        "EF92935C-6E37-4811-8217-8333D4CD5757": {
+            "author": "com.apple.CoreML",
+            "description": "External Metadata Overlay",
+            "name": "Metadata.json",
+            "path": "com.apple.CoreML/Metadata.json"
+        }
+    },
+    "rootModelIdentifier": "E5140320-FE2E-4D82-AF13-27B43CF1775F"
+}

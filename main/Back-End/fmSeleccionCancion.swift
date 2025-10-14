@@ -7,5 +7,3 @@ import FoundationModels
         var cancion: String
     }
 
-
-

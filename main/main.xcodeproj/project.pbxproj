@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2D717F792E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2D717F782E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2D8C1F1E2E947C96005425C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D717F782E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = "ImageClassifier4 2.mlpackage"; sourceTree = "<group>"; };
 		2D8C1F102E947C93005425C7 /* main.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = main.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D8C1F1D2E947C96005425C7 /* mainTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mainTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D8C1F272E947C96005425C7 /* mainUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mainUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,6 +98,7 @@
 		2D8C1F072E947C93005425C7 = {
 			isa = PBXGroup;
 			children = (
+				2D717F782E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage */,
 				2D1B037B2E9AD75A00FA05BB /* Back-End */,
 				2D8C1F122E947C93005425C7 /* main */,
 				2D8C1F202E947C96005425C7 /* mainTests */,
@@ -256,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D717F792E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

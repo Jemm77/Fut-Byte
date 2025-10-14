@@ -1,0 +1,9 @@
+{
+  "MLModelVersionStringKey" : "1.0",
+  "MLModelDescriptionKey" : "Model from Image Classifier 4",
+  "MLModelCreatorDefinedKey" : {
+    "com.apple.createml.version" : "18.7.1"
+  },
+  "MLModelAuthorKey" : "Oscar Medina",
+  "MLModelLicenseKey" : "--"
+}
