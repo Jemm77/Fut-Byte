@@ -1,67 +1,39 @@
-//
-//  ContentView.swift
-//  main
-//
-//  Created by CETYS Universidad  on 06/10/25.
-//
-
 import SwiftUI
 import AVFoundation
 
-//Chat-GPT hizo un desastre aqui, vamos a ponerlo a corregir prompt"En este caso se estan usando funciones de una seccion del BackEnd mas especificamente de escaneador, las cuales quiero que funcionen por detras, porfavor corrigelas"
-
 struct ContentView: View {
-    @StateObject private var grabadora = Grabadora()
     @State private var ultimaCategoria: String = ""
     @State private var ultimaConfianza: Float = 0
     @State private var estaProcesando: Bool = false
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Somos futbyte, a ver si ya jala el GitHub")
+            Text("Somos FutByte")
                 .font(.headline)
 
-            Button("Probar video (bundle)") {
-                probarVideoDesdeBundle()
+            Button(action: {
+                iniciarEscaneoDeVideo()
+            }) {
+                Text(estaProcesando ? "Escaneando..." : "Escanear video")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(estaProcesando)
+
+            if estaProcesando {
+                ProgressView()
+                Text("Procesando video...")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
 
-            VStack(spacing: 8) {
-                if estaProcesando {
-                    ProgressView().progressViewStyle(.circular)
-                    Text("Procesando video...")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                if !ultimaCategoria.isEmpty {
-                    Text("Categoría: \(ultimaCategoria)")
-                        .font(.title3)
-                        .bold()
-                    Text(String(format: "Confianza: %.2f", ultimaConfianza))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            // Permisos de micrófono
-            HStack {
-                Button("Solicitar permiso micrófono") {
-                    grabadora.solicitarPermiso()
-                }
-                Text(grabadora.permisoConcedido ? "Permiso OK" : "Sin permiso")
-                    .foregroundStyle(grabadora.permisoConcedido ? .green : .red)
-            }
-
-            // Controles de grabación
-            HStack {
-                Button(grabadora.estaGrabando ? "Grabando..." : "Iniciar grabación") {
-                    grabadora.inicioDeGrabacion()
-                }
-                .disabled(grabadora.estaGrabando == true || grabadora.permisoConcedido == false)
-
-                Button("Detener") {
-                    grabadora.detenerGrabacion()
-                }
-                .disabled(grabadora.estaGrabando == false)
+            if !ultimaCategoria.isEmpty {
+                Text("Categoría: \(ultimaCategoria)")
+                    .font(.title3)
+                    .bold()
+                Text(String(format: "Confianza: %.2f", ultimaConfianza))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -69,36 +41,40 @@ struct ContentView: View {
         .padding()
     }
 
-    private func probarVideoDesdeBundle() {
-        guard let url = Bundle.main.url(forResource: "WhatsApp Video 2025-10-14 at 5.13.04 PM", withExtension: "mp4", subdirectory: "video") else {
-            print("No se encontró el video en el bundle dentro del subdirectorio 'video'. Revisa que la carpeta sea una folder reference (azul) o que el archivo esté en Copy Bundle Resources y con Target Membership activo.")
+    private func iniciarEscaneoDeVideo() {
+        let nombre = "partido"
+        let ext = "mp4"
+
+        guard let videoURL = Bundle.main.url(forResource: nombre, withExtension: ext) else {
+            print("❌ No se encontró el video en el bundle.")
             return
         }
 
-        DispatchQueue.main.async {
-            self.estaProcesando = true
-            self.ultimaCategoria = ""
-            self.ultimaConfianza = 0
-        }
+        estaProcesando = true
+        ultimaCategoria = ""
+        ultimaConfianza = 0
 
         _ = extraerFrames(
-            videoURL: url,
+            videoURL: videoURL,
             every: 3.0,
             onFrame: { _ in },
-            onClassification: { label, confidence, time in
+            onClassification: { label, confidence, _ in
                 DispatchQueue.main.async {
-                    self.ultimaCategoria = label
-                    self.ultimaConfianza = confidence
+                    ultimaCategoria = label
+                    ultimaConfianza = confidence
                 }
             },
             onComplete: {
                 DispatchQueue.main.async {
-                    self.estaProcesando = false
+                    estaProcesando = false
+                    print("✅ Clasificación completada")
                 }
-                print("Clasificación terminada")
             },
             onError: { error in
                 print("Error: \(error)")
+                DispatchQueue.main.async {
+                    estaProcesando = false
+                }
             }
         )
     }

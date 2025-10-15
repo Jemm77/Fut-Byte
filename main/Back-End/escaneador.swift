@@ -3,9 +3,6 @@ import UIKit
 import CoreVideo
 import CoreML
 
-// correccion con IA Chat-GPT5 asistente de xCode: Prompt utilizado, ¨Que correciones deberia hacerle a esta parte del codigo si quiero, no guardar las imagenes, correrla por detras en la aplicacion y quiero usarla despues en un modelo de ML¨
-
-/// Manejador de extracción que permite cancelar el proceso.
 public final class ExtraccionFramesTask {
     private let cancelClosure: () -> Void
     private var isCancelled = false
@@ -21,7 +18,7 @@ public final class ExtraccionFramesTask {
     }
 }
 
-/// Convierte un CGImage a CVPixelBuffer con un formato apropiado para ML (BGRA).
+/// Convierte CGImage a CVPixelBuffer (BGRA)
 private func pixelBuffer(from cgImage: CGImage) -> CVPixelBuffer? {
     let width = cgImage.width
     let height = cgImage.height
@@ -33,18 +30,16 @@ private func pixelBuffer(from cgImage: CGImage) -> CVPixelBuffer? {
         kCVPixelBufferIOSurfacePropertiesKey: [:] as CFDictionary
     ]
 
-    let status = CVPixelBufferCreate(kCFAllocatorDefault,
-                                     width,
-                                     height,
-                                     kCVPixelFormatType_32BGRA,
-                                     attrs as CFDictionary,
-                                     &pixelBuffer)
-    guard status == kCVReturnSuccess, let pb = pixelBuffer else {
-        return nil
-    }
+    guard CVPixelBufferCreate(kCFAllocatorDefault,
+                              width,
+                              height,
+                              kCVPixelFormatType_32ARGB,
+                              attrs as CFDictionary,
+                              &pixelBuffer) == kCVReturnSuccess,
+          let pb = pixelBuffer else { return nil }
 
-    CVPixelBufferLockBaseAddress(pb, .readOnly)
-    defer { CVPixelBufferUnlockBaseAddress(pb, .readOnly) }
+    CVPixelBufferLockBaseAddress(pb, [])
+    defer { CVPixelBufferUnlockBaseAddress(pb, []) }
 
     guard let baseAddress = CVPixelBufferGetBaseAddress(pb) else { return nil }
 
@@ -56,14 +51,15 @@ private func pixelBuffer(from cgImage: CGImage) -> CVPixelBuffer? {
                                   bitsPerComponent: 8,
                                   bytesPerRow: bytesPerRow,
                                   space: colorSpace,
-                                  bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue) else {
-        return nil
-    }
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue |
+                                              CGBitmapInfo.byteOrder32Little.rawValue)
+    else { return nil }
 
     context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
     return pb
 }
 
+/// Extrae frames del video, los pasa por el modelo y reporta resultados.
 @discardableResult
 func extraerFrames(
     videoURL: URL,
@@ -80,21 +76,9 @@ func extraerFrames(
     generator.requestedTimeToleranceBefore = .zero
     generator.requestedTimeToleranceAfter = .zero
 
-    // Cargar duración con la nueva API (iOS 16+). Como esta función es sync,
-    // puenteamos a async con un semáforo.
-    var duration: CMTime = .zero
-    let sem = DispatchSemaphore(value: 0)
-    Task {
-        if let d = try? await asset.load(.duration) {
-            duration = d
-        } else {
-            duration = asset.duration // fallback (podría mostrar warning en iOS 16+, pero solo si se usa)
-        }
-        sem.signal()
-    }
-    sem.wait()
-
+    let duration = asset.duration
     let durationSeconds = CMTimeGetSeconds(duration)
+
     var times = [NSValue]()
     var current = 0.0
     while current < durationSeconds {
@@ -110,38 +94,35 @@ func extraerFrames(
         generator?.cancelAllCGImageGeneration()
     }
 
-    var remaining = times.count
-    if remaining == 0 {
+    if times.isEmpty {
         DispatchQueue.main.async { onComplete() }
         return task
     }
 
-    generator.generateCGImagesAsynchronously(forTimes: times) { _, cgImage, actualTime, result, error in
-        if cancelled { return }
+    DispatchQueue.global(qos: .userInitiated).async {
+        generator.generateCGImagesAsynchronously(forTimes: times) { _, cgImage, actualTime, result, error in
+            if cancelled { return }
 
-        switch result {
-        case .succeeded:
-            if let cgImage = cgImage, let pb = pixelBuffer(from: cgImage) {
-                onFrame(pb)
-                if let res = ImageModelClassifier.classify(pixelBuffer: pb) {
-                    onClassification(res.label, res.confidence, actualTime)
+            switch result {
+            case .succeeded:
+                if let cgImage = cgImage, let pb = pixelBuffer(from: cgImage) {
+                    onFrame(pb)
+                    if let res = ImageModelClassifier.classify(pixelBuffer: pb) {
+                        onClassification(res.label, res.confidence, actualTime)
+                    }
                 }
+            case .failed:
+                onError(error ?? NSError(domain: "extraerFrames", code: -1,
+                                         userInfo: [NSLocalizedDescriptionKey: "Fallo en \(actualTime)"]))
+                task.cancel()
+            case .cancelled:
+                return
+            @unknown default:
+                return
             }
-        case .failed:
-            let e = error ?? NSError(domain: "extraerFrames", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fallo al generar CGImage en tiempo \(actualTime)"])
-            onError(e)
-            task.cancel()
-            return
-        case .cancelled:
-            return
-        @unknown default:
-            return
         }
 
-        remaining -= 1
-        if remaining == 0 && !cancelled {
-            onComplete()
-        }
+        DispatchQueue.main.async { onComplete() }
     }
 
     return task

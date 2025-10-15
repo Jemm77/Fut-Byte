@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2D717F792E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2D717F782E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage */; };
+		2D396CB32EA0304F00F6A0C4 /* ImageClassifier4 2.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 2D396CB22EA0304F00F6A0C4 /* ImageClassifier4 2.mlpackage */; };
+		2D4412622E9F4874006E51F5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4412612E9F4874006E51F5 /* UIKit.framework */; };
+		2D4412642E9F487D006E51F5 /* CoreML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4412632E9F487D006E51F5 /* CoreML.framework */; };
+		2D4412662E9F4889006E51F5 /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4412652E9F4889006E51F5 /* Vision.framework */; };
+		2D4412682E9F4898006E51F5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4412672E9F4898006E51F5 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +32,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2D717F782E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = "ImageClassifier4 2.mlpackage"; sourceTree = "<group>"; };
+		2D396CB22EA0304F00F6A0C4 /* ImageClassifier4 2.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = "ImageClassifier4 2.mlpackage"; sourceTree = "<group>"; };
+		2D4412612E9F4874006E51F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2D4412632E9F487D006E51F5 /* CoreML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreML.framework; path = System/Library/Frameworks/CoreML.framework; sourceTree = SDKROOT; };
+		2D4412652E9F4889006E51F5 /* Vision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vision.framework; path = System/Library/Frameworks/Vision.framework; sourceTree = SDKROOT; };
+		2D4412672E9F4898006E51F5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2D8C1F102E947C93005425C7 /* main.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = main.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D8C1F1D2E947C96005425C7 /* mainTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mainTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D8C1F272E947C96005425C7 /* mainUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mainUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +83,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D4412682E9F4898006E51F5 /* AVFoundation.framework in Frameworks */,
+				2D4412662E9F4889006E51F5 /* Vision.framework in Frameworks */,
+				2D4412642E9F487D006E51F5 /* CoreML.framework in Frameworks */,
+				2D4412622E9F4874006E51F5 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,15 +107,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D4412602E9F4874006E51F5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2D4412672E9F4898006E51F5 /* AVFoundation.framework */,
+				2D4412652E9F4889006E51F5 /* Vision.framework */,
+				2D4412632E9F487D006E51F5 /* CoreML.framework */,
+				2D4412612E9F4874006E51F5 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2D8C1F072E947C93005425C7 = {
 			isa = PBXGroup;
 			children = (
-				2D717F782E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage */,
 				2D1B037B2E9AD75A00FA05BB /* Back-End */,
 				2D8C1F122E947C93005425C7 /* main */,
 				2D8C1F202E947C96005425C7 /* mainTests */,
 				2D8C1F2A2E947C96005425C7 /* mainUITests */,
+				2D4412602E9F4874006E51F5 /* Frameworks */,
 				2D8C1F112E947C93005425C7 /* Products */,
+				2D396CB22EA0304F00F6A0C4 /* ImageClassifier4 2.mlpackage */,
 			);
 			sourceTree = "<group>";
 		};
@@ -262,7 +286,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D717F792E9EFFF800CAA53F /* ImageClassifier4 2.mlpackage in Sources */,
+				2D396CB32EA0304F00F6A0C4 /* ImageClassifier4 2.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,8 +444,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -436,6 +462,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = j.main;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -451,8 +478,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -467,6 +496,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = j.main;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
