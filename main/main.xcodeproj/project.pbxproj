@@ -42,22 +42,9 @@
 		2D8C1F272E947C96005425C7 /* mainUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mainUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2D1B037C2E9AD76700FA05BB /* Exceptions for "Back-End" folder in "main" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				sistemaDeRecompensas.swift,
-			);
-			target = 2D8C1F0F2E947C93005425C7 /* main */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2D1B037B2E9AD75A00FA05BB /* Back-End */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				2D1B037C2E9AD76700FA05BB /* Exceptions for "Back-End" folder in "main" target */,
-			);
 			path = "Back-End";
 			sourceTree = "<group>";
 		};

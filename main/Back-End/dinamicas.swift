@@ -3,11 +3,9 @@ import Foundation
 import Playgrounds
 import FoundationModels
 
-
-
 class Dinamicas {
     var viewModel: DinamicaViewModel?
-    var rewardSystem: RewardSystem? // Debe estar como propiedad de la clase
+    var sistemaDeRecompensas: SistemaDeRecompensas? // Usa el tipo real del backend
 
     func asignarDinamica(para categoria: String) {
         var dinamica = ""
@@ -19,6 +17,8 @@ class Dinamicas {
         case "GritoDeGol":
             dinamica = "¡Gritar!"
         case "Ceremonia":
+            // Nota: si tu seleccionCancion del backend requiere parámetros, actualiza esta llamada, por ejemplo:
+            // let seleccion = seleccionCancion(para: "Ceremonia")
             let seleccion = seleccionCancion()
             let nombreCancion = seleccion.cancion
             let letra = obtenerLetraDeCancion(nombre: nombreCancion)
@@ -34,8 +34,12 @@ class Dinamicas {
                 guard let self = self else { return }
                 var recompensaMensaje = ""
                 if metaAlcanzada {
-                    if let rewardSystem = self.rewardSystem, rewardSystem.didCompleteTask() {
-                        recompensaMensaje = "\n¡Meta alcanzada! +10 puntos de recompensa."
+                    if let rewards = self.sistemaDeRecompensas {
+                        if rewards.didCompleteTask() {
+                            recompensaMensaje = "\n¡Meta alcanzada! +10 puntos de recompensa."
+                        } else {
+                            recompensaMensaje = "\n¡Meta alcanzada!"
+                        }
                     } else {
                         recompensaMensaje = "\n¡Meta alcanzada!"
                     }
@@ -55,7 +59,19 @@ class Dinamicas {
 
     // Simulación de función para obtener la letra de la canción usando Foundation Model
     private func obtenerLetraDeCancion(nombre: String) -> String {
-        // Llama a la función pública definida en fmLetraCancion.swift
+        #if canImport(FoundationModels)
         return obtenerLetraCancion(nombre: nombre)
+        #else
+        return "[Letra no disponible: agrega FoundationModels o tu backend para obtener la letra de \(nombre).]"
+        #endif
+    }
+    
+    // Fallback local overload para evitar el error de parámetros faltantes si la implementación del backend
+    // no ofrece una versión sin parámetros. Sustituye por tu llamada real si tu firma requiere argumentos.
+    private struct SeleccionCancionResult { let cancion: String }
+    private func seleccionCancion() -> SeleccionCancionResult {
+        // Ajusta esta lógica para alinearla con tu backend (por ejemplo, pasando una categoría)
+        return SeleccionCancionResult(cancion: "We Will Rock You")
     }
 }
+
