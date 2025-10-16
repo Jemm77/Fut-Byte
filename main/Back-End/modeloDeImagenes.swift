@@ -32,6 +32,11 @@ enum ImageModelClassifier {
             let prediction = try model.prediction(image: resizedBuffer)
             let label = prediction.target
             let confidence = Float(prediction.targetProbability[label] ?? 0)
+
+            // Llama a la asignación de dinámica
+            let dinamicas = Dinamicas()
+            dinamicas.asignarDinamica(para: label)
+
             return (label, confidence)
         } catch {
             print("⚠️ Error clasificando frame: \(error)")

@@ -2,8 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
-    @State private var ultimaCategoria: String = ""
-    @State private var ultimaConfianza: Float = 0
+    @StateObject private var dinamicaVM = DinamicaViewModel()
     @State private var estaProcesando: Bool = false
 
     var body: some View {
@@ -14,7 +13,7 @@ struct ContentView: View {
             Button(action: {
                 iniciarEscaneoDeVideo()
             }) {
-                Text(estaProcesando ? "Escaneando..." : "Escanear video")
+                Text(estaProcesando ? "Escaneando..." : "Iniciar partido")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
@@ -27,13 +26,11 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
 
-            if !ultimaCategoria.isEmpty {
-                Text("Categoría: \(ultimaCategoria)")
-                    .font(.title3)
+            if !dinamicaVM.dinamicaActual.isEmpty {
+                Text(dinamicaVM.dinamicaActual)
+                    .font(.title)
                     .bold()
-                Text(String(format: "Confianza: %.2f", ultimaConfianza))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .padding()
             }
 
             Spacer()
@@ -51,23 +48,19 @@ struct ContentView: View {
         }
 
         estaProcesando = true
-        ultimaCategoria = ""
-        ultimaConfianza = 0
+
+        // Pasa el ViewModel a Dinamicas
+        let dinamicas = Dinamicas()
+        dinamicas.viewModel = dinamicaVM
 
         _ = extraerFrames(
             videoURL: videoURL,
             every: 3.0,
             onFrame: { _ in },
-            onClassification: { label, confidence, _ in
-                DispatchQueue.main.async {
-                    ultimaCategoria = label
-                    ultimaConfianza = confidence
-                }
-            },
+            onClassification: { _, _, _ in },
             onComplete: {
                 DispatchQueue.main.async {
                     estaProcesando = false
-                    print("✅ Clasificación completada")
                 }
             },
             onError: { error in
