@@ -10,14 +10,25 @@ import CoreML
 import Vision
 import UIKit
 
-// Carga del modelo CoreML generado automáticamente
-let clasificadorDeJugadas = try? ImageClassifier4_2(configuration: MLModelConfiguration())
 
 enum ImageModelClassifier {
-    /// Clasifica un CVPixelBuffer devolviendo la mejor etiqueta y su confianza.
-    static func classify(pixelBuffer: CVPixelBuffer) -> (label: String, confidence: Float)? {
-        guard let model = clasificadorDeJugadas else {
-            print("⚠️ No se pudo cargar el modelo CoreML")
+    private static let model: ImageClassifier4_2? = {
+        do {
+            let config = MLModelConfiguration()
+            config.computeUnits = .cpuOnly
+            print("⚙️ MLModelConfiguration computeUnits set to: \(config.computeUnits)")
+
+            return try ImageClassifier4_2(configuration: config)
+        } catch {
+            print("⚠️ No se pudo cargar el modelo CoreML: \(error)")
+            return nil
+        }
+    }()
+
+    /// Clasifica un CVPixelBuffer devolviendo la mejor etiqueta.
+    static func classify(pixelBuffer: CVPixelBuffer) -> String? {
+        guard let model = Self.model else {
+            print("⚠️ Modelo CoreML no inicializado")
             return nil
         }
 
@@ -27,17 +38,19 @@ enum ImageModelClassifier {
             return nil
         }
 
+        print("ℹ️ Input pixelBuffer size: \(CVPixelBufferGetWidth(resizedBuffer))x\(CVPixelBufferGetHeight(resizedBuffer)), format: \(CVPixelBufferGetPixelFormatType(resizedBuffer))")
+
         do {
-            // Usa las propiedades correctas del modelo (ver .mlmodel)
-            let prediction = try model.prediction(image: resizedBuffer)
+            // Si existe el struct Input generado automáticamente, se puede usar:
+            let input = ImageClassifier4_2Input(image: resizedBuffer)
+            let prediction = try model.prediction(input: input)
             let label = prediction.target
-            let confidence = Float(prediction.targetProbability[label] ?? 0)
 
             // Llama a la asignación de dinámica
             let dinamicas = Dinamicas()
             dinamicas.asignarDinamica(para: label)
 
-            return (label, confidence)
+            return label
         } catch {
             print("⚠️ Error clasificando frame: \(error)")
             return nil
@@ -45,7 +58,7 @@ enum ImageModelClassifier {
     }
 
     /// Clasifica un CGImage convirtiéndolo a CVPixelBuffer primero.
-    static func classify(cgImage: CGImage) -> (label: String, confidence: Float)? {
+    static func classify(cgImage: CGImage) -> String? {
         guard let pb = Self.pixelBuffer(from: cgImage) else { return nil }
         return classify(pixelBuffer: pb)
     }
@@ -68,7 +81,7 @@ private extension ImageModelClassifier {
         guard CVPixelBufferCreate(kCFAllocatorDefault,
                                   width,
                                   height,
-                                  kCVPixelFormatType_32ARGB,
+                                  kCVPixelFormatType_32BGRA,
                                   attrs as CFDictionary,
                                   &pixelBuffer) == kCVReturnSuccess,
               let pb = pixelBuffer else { return nil }
@@ -96,20 +109,43 @@ private extension ImageModelClassifier {
 
     /// Redimensiona un CVPixelBuffer a otro tamaño (para modelos que esperan 299x299)
     static func resizePixelBuffer(_ pixelBuffer: CVPixelBuffer, width: Int, height: Int) -> CVPixelBuffer? {
-        var ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let scaleX = CGFloat(width) / CGFloat(CVPixelBufferGetWidth(pixelBuffer))
-        let scaleY = CGFloat(height) / CGFloat(CVPixelBufferGetHeight(pixelBuffer))
-        ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+        let sourceWidth = CVPixelBufferGetWidth(pixelBuffer)
+        let sourceHeight = CVPixelBufferGetHeight(pixelBuffer)
+        let scaleX = CGFloat(width) / CGFloat(sourceWidth)
+        let scaleY = CGFloat(height) / CGFloat(sourceHeight)
+        let scale = max(scaleX, scaleY) // Aspect fill
+
+        let scaledWidth = CGFloat(sourceWidth) * scale
+        let scaledHeight = CGFloat(sourceHeight) * scale
+
+        let xOffset = (CGFloat(width) - scaledWidth) / 2.0
+        let yOffset = (CGFloat(height) - scaledHeight) / 2.0
+
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            .transformed(by: CGAffineTransform(translationX: xOffset, y: yOffset))
 
         let context = CIContext()
-        var resized: CVPixelBuffer?
+        var resizedPixelBuffer: CVPixelBuffer?
         let attrs = [kCVPixelBufferCGImageCompatibilityKey: true,
                      kCVPixelBufferCGBitmapContextCompatibilityKey: true] as CFDictionary
 
-        CVPixelBufferCreate(kCFAllocatorDefault, width, height, kCVPixelFormatType_32BGRA, attrs, &resized)
-        guard let output = resized else { return nil }
+        let status = CVPixelBufferCreate(kCFAllocatorDefault,
+                                         width,
+                                         height,
+                                         kCVPixelFormatType_32BGRA,
+                                         attrs,
+                                         &resizedPixelBuffer)
+        guard status == kCVReturnSuccess, let output = resizedPixelBuffer else {
+            return nil
+        }
 
-        context.render(ciImage, to: output)
+        context.render(ciImage,
+                       to: output,
+                       bounds: CGRect(x: 0, y: 0, width: width, height: height),
+                       colorSpace: CGColorSpaceCreateDeviceRGB())
+
         return output
     }
 }
+

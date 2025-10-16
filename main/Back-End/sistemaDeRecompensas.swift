@@ -19,3 +19,5 @@ public struct DefaultSistemaDeRecompensas: SistemaDeRecompensas {
         return true
     }
 }
+
+

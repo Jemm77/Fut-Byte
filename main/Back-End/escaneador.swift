@@ -99,31 +99,48 @@ func extraerFrames(
         return task
     }
 
-    DispatchQueue.global(qos: .userInitiated).async {
-        generator.generateCGImagesAsynchronously(forTimes: times) { _, cgImage, actualTime, result, error in
-            if cancelled { return }
-
-            switch result {
-            case .succeeded:
-                if let cgImage = cgImage, let pb = pixelBuffer(from: cgImage) {
-                    onFrame(pb)
-                    if let res = ImageModelClassifier.classify(pixelBuffer: pb) {
-                        onClassification(res.label, res.confidence, actualTime)
-                    }
-                }
-            case .failed:
-                onError(error ?? NSError(domain: "extraerFrames", code: -1,
-                                         userInfo: [NSLocalizedDescriptionKey: "Fallo en \(actualTime)"]))
-                task.cancel()
-            case .cancelled:
-                return
-            @unknown default:
-                return
+    let totalCount = times.count
+    var finishedCount = 0
+    var didComplete = false
+    func finishIfNeeded() {
+        if !didComplete && finishedCount >= totalCount {
+            didComplete = true
+            DispatchQueue.main.async {
+                onComplete()
             }
         }
+    }
 
-        DispatchQueue.main.async { onComplete() }
+    generator.generateCGImagesAsynchronously(forTimes: times) { _, cgImage, actualTime, result, error in
+        if cancelled { return }
+
+        switch result {
+        case .succeeded:
+            if let cgImage = cgImage, let pb = pixelBuffer(from: cgImage) {
+                onFrame(pb)
+                if let label = ImageModelClassifier.classify(pixelBuffer: pb) {
+                    onClassification(label, 1.0, actualTime)
+                }
+            }
+            finishedCount += 1
+            finishIfNeeded()
+        case .failed:
+            onError(error ?? NSError(domain: "extraerFrames", code: -1,
+                                     userInfo: [NSLocalizedDescriptionKey: "Fallo en \(actualTime)"]))
+            task.cancel()
+            finishedCount += 1
+            finishIfNeeded()
+        case .cancelled:
+            finishedCount += 1
+            finishIfNeeded()
+            return
+        @unknown default:
+            finishedCount += 1
+            finishIfNeeded()
+            return
+        }
     }
 
     return task
 }
+
